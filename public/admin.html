@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Saasum SmartShop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1A1A2E; --ink-soft: #5C5C78;
+    --indigo: #232347; --indigo-deep: #15152B;
+    --marigold: #FFB627; --marigold-deep: #E89E0E;
+    --cream: #FAF7F2; --cream-deep: #F2EDE3; --white: #FFFFFF;
+    --green: #2D8A4E; --green-bg: #E7F4EB;
+    --red: #D64545; --red-bg: #FCEAEA;
+    --border: #E3DDD0;
+    --shadow: 0 2px 10px rgba(26,26,46,0.06);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); }
+  h1,h2,h3 { font-family: 'Poppins', sans-serif; font-weight: 700; margin: 0; }
+  button { font-family: inherit; cursor: pointer; }
+
+  .gate-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--indigo), var(--indigo-deep)); padding: 20px; }
+  .gate-card { background: var(--white); border-radius: 16px; padding: 36px; width: 380px; max-width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
+  .gate-logo { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .gate-logo span { color: var(--marigold-deep); }
+  .gate-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 22px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 6px; }
+  .field input { width: 100%; border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; font-size: 13.5px; font-family: inherit; }
+  .field input:focus { outline: 2px solid var(--marigold); border-color: transparent; }
+  .btn-primary { width: 100%; background: var(--marigold); color: var(--indigo-deep); border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 14px; }
+  .btn-primary:hover { background: var(--marigold-deep); }
+  .form-error { background: var(--red-bg); color: var(--red); font-size: 12.5px; padding: 9px 12px; border-radius: 7px; margin-bottom: 12px; display: none; }
+
+  .topbar { background: var(--indigo-deep); color: var(--white); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
+  .topbar .gate-logo { color: var(--white); margin: 0; }
+  .topbar .gate-logo span { color: var(--marigold); }
+  .btn-secondary { background: rgba(255,255,255,0.1); color: var(--white); border: none; padding: 8px 14px; border-radius: 7px; font-size: 12.5px; font-weight: 600; }
+
+  .main { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+  .tab-row { display: flex; gap: 8px; margin-bottom: 20px; }
+  .tab-btn { background: var(--white); border: 1px solid var(--border); padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+  .tab-btn.active { background: var(--indigo); color: var(--white); border-color: var(--indigo); }
+
+  .seller-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .seller-info .biz { font-weight: 700; font-size: 15px; }
+  .seller-info .meta { font-size: 12.5px; color: var(--ink-soft); margin-top: 3px; }
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: capitalize; margin-left: 8px; }
+  .pill-pending { background: #FFF1D6; color: #946B00; }
+  .pill-approved { background: var(--green-bg); color: var(--green); }
+  .pill-rejected, .pill-suspended { background: var(--red-bg); color: var(--red); }
+  .seller-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .btn-approve { background: var(--green-bg); color: var(--green); border: none; padding: 8px 14px; border-radius: 7px; font-weight: 700; font-size: 12.5px; }
+  .btn-reject { background: var(--red-bg); color: var(--red); border: none; padding: 8px 14px; border-radius: 7px; font-weight: 700; font-size: 12.5px; }
+  .btn-suspend { background: var(--cream-deep); color: var(--ink); border: none; padding: 8px 14px; border-radius: 7px; font-weight: 700; font-size: 12.5px; }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--ink-soft); }
+  .empty-state .emoji { font-size: 40px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<div class="gate-screen" id="gateScreen" style="display:none;">
+  <div class="gate-card">
+    <div class="gate-logo">saasum<span>.</span> admin</div>
+    <div class="gate-sub">Sign in to manage seller approvals</div>
+    <div class="form-error" id="gateError"></div>
+    <form id="gateForm">
+      <div class="field"><label>Email</label><input type="email" id="gateEmail" required></div>
+      <div class="field"><label>Password</label><input type="password" id="gatePassword" required></div>
+      <button class="btn-primary" type="submit">Sign in</button>
+    </form>
+  </div>
+</div>
+
+<div id="dashScreen" style="display:none;">
+  <div class="topbar">
+    <h1 class="gate-logo">saasum<span>.</span> admin</h1>
+    <button class="btn-secondary" id="logoutBtn">Sign out</button>
+  </div>
+  <div class="main">
+    <div class="tab-row" id="tabRow">
+      <button class="tab-btn active" data-status="pending">Pending</button>
+      <button class="tab-btn" data-status="approved">Approved</button>
+      <button class="tab-btn" data-status="rejected">Rejected</button>
+      <button class="tab-btn" data-status="suspended">Suspended</button>
+      <button class="tab-btn" data-status="">All</button>
+    </div>
+    <div id="sellerList"></div>
+  </div>
+</div>
+
+<script src="/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seller Center — Saasum SmartShop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1A1A2E; --ink-soft: #5C5C78;
+    --indigo: #232347; --indigo-deep: #15152B;
+    --marigold: #FFB627; --marigold-deep: #E89E0E;
+    --cream: #FAF7F2; --cream-deep: #F2EDE3; --white: #FFFFFF;
+    --green: #2D8A4E; --green-bg: #E7F4EB;
+    --red: #D64545; --red-bg: #FCEAEA;
+    --blue: #2255B0; --blue-bg: #E0EAFB;
+    --border: #E3DDD0;
+    --shadow: 0 2px 10px rgba(26,26,46,0.06);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); }
+  h1,h2,h3 { font-family: 'Poppins', sans-serif; font-weight: 700; margin: 0; }
+  button { font-family: inherit; cursor: pointer; }
+  a { color: inherit; }
+
+  /* ── Auth gate screen ── */
+  .gate-screen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-deep) 100%);
+    padding: 20px;
+  }
+  .gate-card {
+    background: var(--white); border-radius: 16px; padding: 36px; width: 420px; max-width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  }
+  .gate-logo { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .gate-logo span { color: var(--marigold-deep); }
+  .gate-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 24px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 6px; }
+  .field input, .field select, .field textarea {
+    width: 100%; border: 1px solid var(--border); border-radius: 7px;
+    padding: 10px 12px; font-size: 13.5px; font-family: inherit;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--marigold); border-color: transparent; }
+  .btn-primary {
+    width: 100%; background: var(--marigold); color: var(--indigo-deep); border: none;
+    padding: 12px; border-radius: 8px; font-weight: 700; font-size: 14px;
+  }
+  .btn-primary:hover { background: var(--marigold-deep); }
+  .btn-secondary {
+    background: var(--white); border: 1px solid var(--border); color: var(--ink);
+    padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 13px;
+  }
+  .btn-secondary:hover { background: var(--cream-deep); }
+  .btn-danger { background: var(--red-bg); color: var(--red); border: none; padding: 8px 14px; border-radius: 7px; font-weight: 700; font-size: 12.5px; }
+  .gate-switch { text-align: center; font-size: 13px; margin-top: 16px; color: var(--ink-soft); }
+  .gate-switch a { color: var(--indigo); font-weight: 700; cursor: pointer; }
+  .form-error { background: var(--red-bg); color: var(--red); font-size: 12.5px; padding: 9px 12px; border-radius: 7px; margin-bottom: 12px; display: none; }
+  .form-success { background: var(--green-bg); color: var(--green); font-size: 12.5px; padding: 9px 12px; border-radius: 7px; margin-bottom: 12px; display: none; }
+
+  /* ── Pending/rejected status screen ── */
+  .status-screen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: var(--cream); padding: 20px; text-align: center;
+  }
+  .status-card { background: var(--white); border-radius: 16px; padding: 44px; width: 460px; max-width: 100%; box-shadow: var(--shadow); }
+  .status-emoji { font-size: 48px; margin-bottom: 16px; }
+  .status-card h2 { font-size: 20px; margin-bottom: 10px; }
+  .status-card p { color: var(--ink-soft); font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+  .status-pill-big { display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.03em; }
+
+  /* ── Dashboard layout ── */
+  .dash { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 230px; background: var(--indigo-deep); color: #C9C9DE; padding: 24px 16px;
+    display: flex; flex-direction: column; flex-shrink: 0;
+  }
+  .sidebar .gate-logo { color: var(--white); padding: 0 8px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 16px; }
+  .sidebar .biz-name { font-size: 12.5px; padding: 0 8px; color: #9999B5; margin-bottom: 20px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 8px;
+    font-size: 13.5px; font-weight: 600; color: #C9C9DE; background: none; border: none; text-align: left; width: 100%;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.06); }
+  .nav-item.active { background: var(--marigold); color: var(--indigo-deep); }
+  .sidebar-footer { margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+
+  .main-area { flex: 1; padding: 28px 36px; }
+  .page-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .page-head h2 { font-size: 22px; }
+  .page-head .sub { font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 26px; }
+  .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+  .stat-card .label { font-size: 12px; color: var(--ink-soft); font-weight: 600; margin-bottom: 6px; }
+  .stat-card .value { font-size: 24px; font-weight: 800; }
+
+  .panel { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-soft); padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13.5px; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  .prod-thumb { font-size: 22px; width: 40px; height: 40px; background: var(--cream-deep); border-radius: 7px; display: flex; align-items: center; justify-content: center; margin-right: 10px; }
+  .cell-product { display: flex; align-items: center; }
+  .cell-product .meta .name { font-weight: 600; }
+  .cell-product .meta .brand { font-size: 11.5px; color: var(--ink-soft); }
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: capitalize; }
+  .pill-pending { background: #FFF1D6; color: #946B00; }
+  .pill-confirmed { background: var(--blue-bg); color: var(--blue); }
+  .pill-shipped { background: var(--blue-bg); color: var(--blue); }
+  .pill-delivered { background: var(--green-bg); color: var(--green); }
+  .pill-cancelled { background: var(--red-bg); color: var(--red); }
+  .icon-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 600; }
+  .icon-btn:hover { background: var(--cream-deep); }
+  .row-actions { display: flex; gap: 6px; }
+  .empty-row td { text-align: center; padding: 50px 16px; color: var(--ink-soft); }
+
+  .btn-add-product { background: var(--marigold); color: var(--indigo-deep); border: none; padding: 11px 18px; border-radius: 8px; font-weight: 700; font-size: 13.5px; }
+  .btn-add-product:hover { background: var(--marigold-deep); }
+
+  .stock-input { width: 70px; border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 13px; font-family: inherit; }
+  select.status-select { border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12.5px; font-family: inherit; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(26,26,46,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: 14px; padding: 30px; max-width: 480px; width: 100%; max-height: 88vh; overflow-y: auto; position: relative; }
+  .modal-close-x { position: absolute; top: 18px; right: 20px; background: none; border: none; font-size: 18px; color: var(--ink-soft); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .customer-detail { font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
+  .customer-detail strong { color: var(--ink); }
+
+  @media (max-width: 900px) {
+    .dash { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; overflow-x: auto; align-items: center; padding: 12px; }
+    .sidebar .gate-logo, .sidebar .biz-name, .sidebar-footer { display: none; }
+    .stat-row { grid-template-columns: repeat(2, 1fr); }
+    .main-area { padding: 18px; }
+    table { font-size: 12.5px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── AUTH GATE (shown when logged out) ── -->
+<div class="gate-screen" id="gateScreen" style="display:none;">
+  <div class="gate-card">
+    <div class="gate-logo">saasum<span>.</span> seller center</div>
+    <div class="gate-sub" id="gateSub">Sign in to manage your store</div>
+    <div class="form-error" id="gateError"></div>
+    <form id="gateForm">
+      <div id="registerFields" style="display:none;">
+        <div class="field"><label>Business name</label><input type="text" id="regBusinessName"></div>
+        <div class="field"><label>Contact name</label><input type="text" id="regContactName"></div>
+        <div class="field"><label>Phone</label><input type="tel" id="regPhone"></div>
+      </div>
+      <div class="field"><label>Email</label><input type="email" id="gateEmail" required></div>
+      <div class="field"><label>Password</label><input type="password" id="gatePassword" required minlength="6"></div>
+      <button class="btn-primary" type="submit" id="gateSubmitBtn">Sign in</button>
+    </form>
+    <div class="gate-switch" id="gateSwitch">New seller? <a id="gateSwitchLink">Register your store</a></div>
+  </div>
+</div>
+
+<!-- ── PENDING / REJECTED / SUSPENDED STATUS SCREEN ── -->
+<div class="status-screen" id="statusScreen" style="display:none;">
+  <div class="status-card">
+    <div class="status-emoji" id="statusEmoji">⏳</div>
+    <span class="status-pill-big" id="statusPillBig"></span>
+    <h2 id="statusTitle">Your account is under review</h2>
+    <p id="statusMessage"></p>
+    <button class="btn-secondary" id="statusLogoutBtn">Sign out</button>
+  </div>
+</div>
+
+<!-- ── DASHBOARD (shown when approved) ── -->
+<div class="dash" id="dashScreen" style="display:none;">
+  <aside class="sidebar">
+    <div class="gate-logo">saasum<span>.</span></div>
+    <div class="biz-name" id="sidebarBizName">—</div>
+    <button class="nav-item active" data-page="overview">📊 Overview</button>
+    <button class="nav-item" data-page="products">📦 Products</button>
+    <button class="nav-item" data-page="orders">🧾 Orders</button>
+    <button class="nav-item" data-page="profile">⚙️ Store profile</button>
+    <div class="sidebar-footer">
+      <button class="nav-item" id="dashLogoutBtn">↩ Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main-area">
+
+    <!-- Overview -->
+    <section id="page-overview">
+      <div class="page-head"><div><h2>Overview</h2><div class="sub">Your store at a glance</div></div></div>
+      <div class="stat-row" id="statRow"></div>
+      <div class="panel" style="padding:20px;">
+        <h3 style="font-size:15px; margin-bottom:14px;">Recent orders</h3>
+        <table>
+          <thead><tr><th>Order</th><th>Product</th><th>Customer</th><th>Status</th></tr></thead>
+          <tbody id="recentOrdersBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Products -->
+    <section id="page-products" style="display:none;">
+      <div class="page-head">
+        <div><h2>Products</h2><div class="sub">Add, edit, or remove items from your catalog</div></div>
+        <button class="btn-add-product" id="openAddProductBtn">+ Add product</button>
+      </div>
+      <div class="panel">
+        <table>
+          <thead><tr><th>Product</th><th>Price</th><th>Stock</th><th>Rating</th><th>Status</th><th></th></tr></thead>
+          <tbody id="productsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Orders -->
+    <section id="page-orders" style="display:none;">
+      <div class="page-head">
+        <div><h2>Orders</h2><div class="sub">Items from your catalog across all customer orders</div></div>
+        <select id="orderStatusFilter" class="status-select">
+          <option value="">All statuses</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="panel">
+        <table>
+          <thead><tr><th>Order</th><th>Product</th><th>Qty</th><th>Amount</th><th>Customer & address</th><th>Status</th></tr></thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Profile -->
+    <section id="page-profile" style="display:none;">
+      <div class="page-head"><div><h2>Store profile</h2><div class="sub">Update your seller account details</div></div></div>
+      <div class="panel" style="padding:24px; max-width:480px;">
+        <div class="form-error" id="profileError"></div>
+        <div class="form-success" id="profileSuccess"></div>
+        <div class="field"><label>Business name</label><input type="text" id="profileBusinessName"></div>
+        <div class="field"><label>Contact name</label><input type="text" id="profileContactName"></div>
+        <div class="field"><label>Phone</label><input type="tel" id="profilePhone"></div>
+        <div class="field"><label>Email</label><input type="email" id="profileEmail" disabled style="background:var(--cream-deep);"></div>
+        <button class="btn-primary" id="saveProfileBtn">Save changes</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ── Add/Edit Product Modal ── -->
+<div class="modal-overlay" id="productModalOverlay">
+  <div class="modal">
+    <button class="modal-close-x" id="closeProductModal">✕</button>
+    <h3 id="productModalTitle" style="margin-bottom:4px;">Add product</h3>
+    <div class="gate-sub" style="margin-bottom:18px;">List a new item in your store</div>
+    <div class="form-error" id="productError"></div>
+    <form id="productForm">
+      <input type="hidden" id="productId">
+      <div class="field"><label>Product name</label><input type="text" id="pName" required></div>
+      <div class="field-row">
+        <div class="field"><label>Brand</label><input type="text" id="pBrand"></div>
+        <div class="field"><label>Emoji icon</label><input type="text" id="pEmoji" placeholder="📦" maxlength="4"></div>
+      </div>
+      <div class="field"><label>Category</label><select id="pCategory"></select></div>
+      <div class="field"><label>Description</label><textarea id="pDescription" rows="3"></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Price (₹)</label><input type="number" id="pPrice" min="1" step="0.01" required></div>
+        <div class="field"><label>MRP (₹)</label><input type="number" id="pMrp" min="1" step="0.01" required></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Stock</label><input type="number" id="pStock" min="0" value="100"></div>
+        <div class="field"><label>Badge</label>
+          <select id="pBadge">
+            <option value="">None</option>
+            <option value="best">Best Seller</option>
+            <option value="deal">Today's Deal</option>
+            <option value="new">New Arrival</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label><input type="checkbox" id="pPrime" style="width:auto; margin-right:6px;">Eligible for Prime delivery</label>
+      </div>
+      <button class="btn-primary" type="submit" id="productSubmitBtn">Save product</button>
+    </form>
+  </div>
+</div>
+
+<script src="/seller.js"></script>
+</body>
+</html>

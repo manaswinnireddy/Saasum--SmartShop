@@ -1,0 +1,19 @@
+{
+  "name": "saasum-smartshop",
+  "version": "1.0.0",
+  "description": "Saasum SmartShop - full-stack e-commerce app (Express + SQLite via sql.js)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "sql.js": "^1.10.3",
+    "uuid": "^9.0.1"
+  }
+}
